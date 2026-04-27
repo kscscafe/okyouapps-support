@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>お経のアプリ サポート | Okyou Apps Support</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #1a1510;
+      --ink-light: #3d3530;
+      --gold: #b8922a;
+      --gold-light: #d4a843;
+      --washi: #f5f0e8;
+      --washi-dark: #ede5d5;
+      --red: #8b2020;
+      --border: rgba(26,21,16,0.12);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--washi);
+      color: var(--ink);
+      font-family: 'Noto Serif JP', serif;
+      font-weight: 300;
+      min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        url("data:image/svg+xml,%3Csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* Lang toggle */
+    .lang-bar {
+      position: fixed;
+      top: 0; right: 0;
+      z-index: 100;
+      padding: 12px 24px;
+      display: flex;
+      gap: 4px;
+    }
+
+    .lang-btn {
+      background: none;
+      border: 1px solid var(--border);
+      color: var(--ink-light);
+      font-family: 'Noto Serif JP', serif;
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      padding: 4px 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+      border-radius: 2px;
+    }
+
+    .lang-btn.active {
+      background: var(--ink);
+      color: var(--washi);
+      border-color: var(--ink);
+    }
+
+    /* Header */
+    header {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 72px 24px 48px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header-kamon {
+      font-size: 36px;
+      margin-bottom: 16px;
+      opacity: 0.7;
+    }
+
+    .header-title-jp {
+      font-size: clamp(22px, 4vw, 32px);
+      font-weight: 400;
+      letter-spacing: 0.3em;
+      margin-bottom: 8px;
+    }
+
+    .header-title-en {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: clamp(13px, 2vw, 16px);
+      color: var(--gold);
+      letter-spacing: 0.15em;
+      font-weight: 300;
+    }
+
+    .header-divider {
+      width: 60px;
+      height: 1px;
+      background: var(--gold);
+      margin: 20px auto;
+      opacity: 0.6;
+    }
+
+    .header-sub {
+      font-size: 13px;
+      color: var(--ink-light);
+      letter-spacing: 0.1em;
+    }
+
+    /* Main */
+    main {
+      position: relative;
+      z-index: 1;
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+    }
+
+    /* Section */
+    section {
+      margin-top: 56px;
+    }
+
+    .section-label {
+      font-size: 10px;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* App grid */
+    .app-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+    }
+
+    .app-card {
+      background: var(--washi);
+      padding: 24px;
+      transition: background 0.2s;
+    }
+
+    .app-card:hover {
+      background: var(--washi-dark);
+    }
+
+    .app-name {
+      font-size: 15px;
+      font-weight: 400;
+      letter-spacing: 0.05em;
+      margin-bottom: 6px;
+      line-height: 1.5;
+    }
+
+    .app-name-en {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 12px;
+      color: var(--gold);
+      letter-spacing: 0.1em;
+      margin-bottom: 12px;
+      font-style: italic;
+    }
+
+    .app-platforms {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .platform-badge {
+      font-size: 10px;
+      letter-spacing: 0.08em;
+      padding: 3px 8px;
+      border: 1px solid var(--border);
+      color: var(--ink-light);
+    }
+
+    .platform-badge a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .platform-badge a:hover {
+      color: var(--gold);
+    }
+
+    /* FAQ */
+    .faq-list {
+      border: 1px solid var(--border);
+    }
+
+    .faq-item {
+      border-bottom: 1px solid var(--border);
+    }
+
+    .faq-item:last-child {
+      border-bottom: none;
+    }
+
+    .faq-q {
+      width: 100%;
+      background: none;
+      border: none;
+      text-align: left;
+      font-family: 'Noto Serif JP', serif;
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--ink);
+      padding: 20px 24px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      letter-spacing: 0.05em;
+      line-height: 1.6;
+    }
+
+    .faq-q:hover {
+      background: var(--washi-dark);
+    }
+
+    .faq-q .arrow {
+      font-size: 10px;
+      color: var(--gold);
+      transition: transform 0.25s;
+      flex-shrink: 0;
+      margin-left: 16px;
+    }
+
+    .faq-item.open .faq-q .arrow {
+      transform: rotate(180deg);
+    }
+
+    .faq-a {
+      display: none;
+      padding: 0 24px 20px;
+      font-size: 13px;
+      line-height: 1.9;
+      color: var(--ink-light);
+      background: var(--washi-dark);
+    }
+
+    .faq-item.open .faq-a {
+      display: block;
+    }
+
+    /* Contact */
+    .contact-box {
+      border: 1px solid var(--border);
+      padding: 32px;
+      text-align: center;
+    }
+
+    .contact-box p {
+      font-size: 13px;
+      line-height: 1.9;
+      color: var(--ink-light);
+      margin-bottom: 20px;
+    }
+
+    .contact-btn {
+      display: inline-block;
+      padding: 12px 32px;
+      border: 1px solid var(--ink);
+      color: var(--ink);
+      text-decoration: none;
+      font-family: 'Noto Serif JP', serif;
+      font-size: 13px;
+      letter-spacing: 0.15em;
+      transition: all 0.2s;
+    }
+
+    .contact-btn:hover {
+      background: var(--ink);
+      color: var(--washi);
+    }
+
+    /* Footer */
+    footer {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 32px 24px;
+      border-top: 1px solid var(--border);
+      font-size: 11px;
+      color: var(--ink-light);
+      letter-spacing: 0.1em;
+    }
+
+    footer a {
+      color: var(--gold);
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+
+
+    /* App icons */
+    .app-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 14px;
+      margin-bottom: 12px;
+      display: block;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    }
+    .app-icon-placeholder {
+      width: 64px;
+      height: 64px;
+      border-radius: 14px;
+      margin-bottom: 12px;
+      background: var(--washi-dark);
+      border: 1px dashed var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      color: var(--ink-light);
+      letter-spacing: 0.05em;
+    }
+    /* i18n */
+    [data-en] { display: none; }
+    body.en [data-jp] { display: none; }
+    body.en [data-en] { display: revert; }
+
+
+    /* Contact form */
+    .contact-box { text-align: left; }
+    .contact-box > p { text-align: center; margin-bottom: 24px; }
+    .form-group { margin-bottom: 16px; }
+    .form-label {
+      display: block;
+      font-size: 11px;
+      letter-spacing: 0.15em;
+      color: var(--ink-light);
+      margin-bottom: 6px;
+    }
+    .form-input {
+      width: 100%;
+      background: var(--washi);
+      border: 1px solid var(--border);
+      color: var(--ink);
+      font-family: 'Noto Serif JP', serif;
+      font-size: 13px;
+      padding: 10px 14px;
+      outline: none;
+      transition: border-color 0.2s;
+      border-radius: 0;
+      appearance: none;
+    }
+    .form-input:focus { border-color: var(--gold); }
+    .form-textarea { min-height: 120px; resize: vertical; }
+    .contact-btn { cursor: pointer; margin-top: 8px; width: 100%; justify-content: center; }
+    .form-error { font-size: 12px; color: var(--red); margin-bottom: 10px; }
+    #contact-thanks { text-align: center; padding: 24px 0; }
+    @media (max-width: 540px) {
+      header { padding: 56px 16px 36px; }
+      .app-grid { grid-template-columns: 1fr; }
+      .contact-box { padding: 24px 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="lang-bar">
+  <button class="lang-btn active" onclick="setLang('ja')">日本語</button>
+  <button class="lang-btn" onclick="setLang('en')">English</button>
+</div>
+
+<header>
+  <div class="header-kamon">☸</div>
+  <h1 class="header-title-jp" data-jp>お経のアプリ</h1>
+  <h1 class="header-title-en" data-en>Okyou Apps</h1>
+  <p class="header-title-en" data-jp>Okyou App Series</p>
+  <div class="header-divider"></div>
+  <p class="header-sub" data-jp>サポートページ</p>
+  <p class="header-sub" data-en>Support Page</p>
+</header>
+
+<main>
+
+  <!-- Apps -->
+  <section>
+    <div class="section-label" data-jp>アプリ一覧</div>
+    <div class="section-label" data-en>Our Apps</div>
+
+    <div class="app-grid">
+
+      <div class="app-card">
+        <img class="app-icon" src="icons/okyou.png" alt="お経のアプリ">
+        <div class="app-name" data-jp>お経のアプリ</div>
+        <div class="app-name" data-en>Okyou App</div>
+        <div class="app-name-en">Buddhist Sutra App</div>
+        <div class="app-platforms">
+          <span class="platform-badge"><a href="https://apps.apple.com/jp/app/id1589241305" target="_blank">App Store</a></span>
+          <span class="platform-badge"><a href="https://play.google.com/store/apps/details?id=com.pokekyo3.pokekyo3" target="_blank">Google Play</a></span>
+        </div>
+      </div>
+
+      <div class="app-card">
+        <img class="app-icon" src="icons/ichi.png" alt="一一文文">
+        <div class="app-name" data-jp>お経のアプリ　一一文文</div>
+        <div class="app-name" data-en>Okyou App Ichimoji</div>
+        <div class="app-name-en">One by One</div>
+        <div class="app-platforms">
+          <span class="platform-badge"><a href="https://apps.apple.com/jp/app/id6451101115" target="_blank">App Store</a></span>
+          <span class="platform-badge"><a href="https://play.google.com/store/apps/details?id=com.ksugizaki.ichimon" target="_blank">Google Play</a></span>
+        </div>
+      </div>
+
+      <div class="app-card">
+        <img class="app-icon" src="icons/shakyo.png" alt="写経">
+        <div class="app-name" data-jp>お経のアプリ　写経</div>
+        <div class="app-name" data-en>Okyou App Shakyo</div>
+        <div class="app-name-en">Sutra Copying</div>
+        <div class="app-platforms">
+          <span class="platform-badge"><a href="https://apps.apple.com/us/app/id6462084840" target="_blank">App Store</a></span>
+          <span class="platform-badge"><a href="https://play.google.com/store/apps/details?id=com.ksugizaki.shakyo" target="_blank">Google Play</a></span>
+        </div>
+      </div>
+
+      <div class="app-card">
+        <img class="app-icon" src="icons/mandara.png" alt="大曼荼羅の世界">
+        <div class="app-name" data-jp>お経のアプリ　大曼荼羅の世界</div>
+        <div class="app-name" data-en>Okyou App Daimandara</div>
+        <div class="app-name-en">World of the Great Mandala</div>
+        <div class="app-platforms">
+          <span class="platform-badge"><a href="https://apps.apple.com/us/app/id6467572694" target="_blank">App Store</a></span>
+          <span class="platform-badge"><a href="https://play.google.com/store/apps/details?id=com.ksugizaki.mandara" target="_blank">Google Play</a></span>
+        </div>
+      </div>
+
+      <div class="app-card">
+        <img class="app-icon" src="icons/with.png" alt="いっしょに唱えるお経本With">
+        <div class="app-name" data-jp>お経のアプリ　いっしょに唱えるお経本 With</div>
+        <div class="app-name" data-en>Okyou App With</div>
+        <div class="app-name-en">Chanting Together</div>
+        <div class="app-platforms">
+          <span class="platform-badge"><a href="https://apps.apple.com/jp/app/id6467717197" target="_blank">App Store</a></span>
+          <span class="platform-badge"><a href="https://play.google.com/store/apps/details?id=com.ksugizaki.with" target="_blank">Google Play</a></span>
+        </div>
+      </div>
+
+      <div class="app-card">
+        <img class="app-icon" src="icons/plus.png" alt="写経＋">
+        <div class="app-name" data-jp>お経のアプリ　写経＋</div>
+        <div class="app-name" data-en>Okyou App Shakyo+</div>
+        <div class="app-name-en">Sutra Copying Plus</div>
+        <div class="app-platforms">
+          <span class="platform-badge"><a href="https://apps.apple.com/jp/app/id6504739064" target="_blank">App Store</a></span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FAQ JP -->
+  <section data-jp>
+    <div class="section-label">よくあるご質問</div>
+    <div class="faq-list">
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          音声が再生されません
+          <span class="arrow">▼</span>
+        </button>
+        <div class="faq-a">
+          端末のマナーモード（消音スイッチ）がオンになっていても、音声は再生されます。<br>
+          それでも音が出ない場合は、端末の音量設定をご確認ください。また、アプリを一度終了してから再起動してみてください。
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          バックグラウンドで音声が止まります
+          <span class="arrow">▼</span>
+        </button>
+        <div class="faq-a">
+          コントロールセンターから再生を再開できる場合があります。端末を再起動後にお試しください。
+          改善しない場合はお問い合わせフォームよりご連絡ください。
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          写経データは保存されますか？
+          <span class="arrow">▼</span>
+        </button>
+        <div class="faq-a">
+          写経データはお使いの端末内のみに保存されます。サーバーへの送信は行いません。
+          アプリをアンインストールするとデータは削除されますのでご注意ください。
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          アプリの動作が不安定です
+          <span class="arrow">▼</span>
+        </button>
+        <div class="faq-a">
+          端末を再起動してから再度お試しください。OSのバージョンを最新に更新することで改善する場合があります。
+          解決しない場合はお問い合わせください。
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          対応OSのバージョンを教えてください
+          <span class="arrow">▼</span>
+        </button>
+        <div class="faq-a">
+          iOS版はiOS 14以降、Android版はAndroid 6.0以降を推奨しています。
+          最新のOSへのアップデートを推奨します。
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- FAQ EN -->
+  <section data-en>
+    <div class="section-label">Frequently Asked Questions</div>
+    <div class="faq-list">
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Audio does not play
+          <span class="arrow">▼</span>
+        </button>
+        <div class="faq-a">
+          Audio will play even if your device is in silent mode (mute switch on).
+          If you still cannot hear audio, please check your device's volume settings and try restarting the app.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Audio stops in the background
+          <span class="arrow">▼</span>
+        </button>
+        <div class="faq-a">
+          You may be able to resume playback from the Control Center. Please restart your device and try again.
+          If the issue persists, please contact us via the form below.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          Is my sutra copying (shakyo) data saved?
+          <span class="arrow">▼</span>
+        </button>
+        <div class="faq-a">
+          Your shakyo data is stored only on your device and is never sent to any server.
+          Please note that uninstalling the app will permanently delete all saved data.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          The app is unstable or crashes
+          <span class="arrow">▼</span>
+        </button>
+        <div class="faq-a">
+          Please restart your device and try again. Updating to the latest version of iOS or Android may also resolve the issue.
+          If the problem continues, please contact us.
+        </div>
+      </div>
+
+      <div class="faq-item">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          What OS versions are supported?
+          <span class="arrow">▼</span>
+        </button>
+        <div class="faq-a">
+          We recommend iOS 14 or later for iPhone, and Android 6.0 or later for Android devices.
+          Keeping your OS up to date is recommended for the best experience.
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Contact -->
+  <section>
+    <div class="section-label" data-jp>お問い合わせ</div>
+    <div class="section-label" data-en>Contact</div>
+
+    <div class="contact-box">
+      <p data-jp>
+        ご不明な点・ご要望がございましたら、<br>
+        以下よりお気軽にお問い合わせください。<br>
+        通常、2〜3営業日以内にご返信いたします。
+      </p>
+      <p data-en>
+        If you have any questions or feedback,<br>
+        please feel free to reach out.<br>
+        We typically respond within 2–3 business days.
+      </p>
+
+      <div id="contact-form-wrap">
+        <div class="form-group" data-jp>
+          <label class="form-label">お名前</label>
+          <input type="text" id="f-name" class="form-input" placeholder="山田 太郎">
+        </div>
+        <div class="form-group" data-en>
+          <label class="form-label">Name</label>
+          <input type="text" id="f-name-en" class="form-input" placeholder="Your name">
+        </div>
+        <div class="form-group" data-jp>
+          <label class="form-label">メールアドレス</label>
+          <input type="email" id="f-email" class="form-input" placeholder="example@email.com">
+        </div>
+        <div class="form-group" data-en>
+          <label class="form-label">Email</label>
+          <input type="email" id="f-email-en" class="form-input" placeholder="example@email.com">
+        </div>
+        <div class="form-group" data-jp>
+          <label class="form-label">ご使用のアプリ</label>
+          <select id="f-app" class="form-input">
+            <option value="">選択してください</option>
+            <option>お経のアプリ</option>
+            <option>お経のアプリ　一一文文</option>
+            <option>お経のアプリ　写経</option>
+            <option>お経のアプリ　大曼荼羅の世界</option>
+            <option>お経のアプリ　いっしょに唱えるお経本 With</option>
+            <option>お経のアプリ　写経＋</option>
+            <option>その他・全般</option>
+          </select>
+        </div>
+        <div class="form-group" data-en>
+          <label class="form-label">App</label>
+          <select id="f-app-en" class="form-input">
+            <option value="">Select an app</option>
+            <option>Okyou App</option>
+            <option>Okyou App Ichimoji</option>
+            <option>Okyou App Shakyo</option>
+            <option>Okyou App Daimandara</option>
+            <option>Okyou App With</option>
+            <option>Okyou App Shakyo+</option>
+            <option>Other / General</option>
+          </select>
+        </div>
+        <div class="form-group" data-jp>
+          <label class="form-label">お問い合わせ内容</label>
+          <textarea id="f-msg" class="form-input form-textarea" placeholder="ご不明な点やご要望をご記入ください"></textarea>
+        </div>
+        <div class="form-group" data-en>
+          <label class="form-label">Message</label>
+          <textarea id="f-msg-en" class="form-input form-textarea" placeholder="Please describe your question or feedback"></textarea>
+        </div>
+        <div id="form-error" class="form-error" style="display:none"></div>
+        <button class="contact-btn" data-jp onclick="submitForm()">送信する</button>
+        <button class="contact-btn" data-en onclick="submitForm()">Send Message</button>
+      </div>
+
+      <div id="contact-thanks" style="display:none">
+        <p data-jp style="color:var(--ink)">お問い合わせありがとうございます。<br>2〜3営業日以内にご返信いたします。</p>
+        <p data-en style="color:var(--ink)">Thank you for your message.<br>We will get back to you within 2-3 business days.</p>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <p>
+    <a href="privacy.html" data-jp>プライバシーポリシー</a>
+    <a href="privacy.html" data-en>Privacy Policy</a>
+    &nbsp;|&nbsp;
+    <span data-jp>© 2024 Aoi Sugizaki / OFFICE ES LLC</span>
+    <span data-en>© 2024 Aoi Sugizaki / OFFICE ES LLC</span>
+  </p>
+</footer>
+
+<script>
+  function setLang(lang) {
+    document.body.classList.toggle('en', lang === 'en');
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+      btn.classList.toggle('active', btn.textContent.trim() === (lang === 'ja' ? '日本語' : 'English'));
+    });
+    document.documentElement.lang = lang === 'en' ? 'en' : 'ja';
+  }
+
+  function toggleFaq(btn) {
+    btn.closest('.faq-item').classList.toggle('open');
+  }
+
+  async function submitForm() {
+    const isEn = document.body.classList.contains('en');
+    const name  = document.getElementById(isEn ? 'f-name-en'  : 'f-name').value.trim();
+    const email = document.getElementById(isEn ? 'f-email-en' : 'f-email').value.trim();
+    const app   = document.getElementById(isEn ? 'f-app-en'   : 'f-app').value;
+    const msg   = document.getElementById(isEn ? 'f-msg-en'   : 'f-msg').value.trim();
+    const err   = document.getElementById('form-error');
+
+    if (!name || !email || !msg) {
+      err.textContent = isEn ? 'Please fill in all required fields.' : '必須項目を入力してください。';
+      err.style.display = 'block';
+      return;
+    }
+    err.style.display = 'none';
+
+    try {
+      const res = await fetch('https://formspree.io/f/xlgakzln', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify({ name, email, app, message: msg })
+      });
+      if (res.ok) {
+        document.getElementById('contact-form-wrap').style.display = 'none';
+        document.getElementById('contact-thanks').style.display = 'block';
+      } else {
+        err.textContent = isEn ? 'An error occurred. Please try again.' : '送信に失敗しました。しばらくしてからお試しください。';
+        err.style.display = 'block';
+      }
+    } catch(e) {
+      err.textContent = isEn ? 'Network error. Please try again.' : 'ネットワークエラーが発生しました。';
+      err.style.display = 'block';
+    }
+  }
+</script>
+
+</body>
+</html>
